@@ -55,6 +55,14 @@ export default function Editor() {
     return match ? match[0].length : 0;
   }
 
+  function removeBegginingSpaces(string) {
+    var text = string
+    while(true){
+      break
+    }
+    return text
+  }
+
   class TreeNode {
     constructor(data) {
       this.data = data;
@@ -63,7 +71,7 @@ export default function Editor() {
 
     // Add a child node
     addChild(childNode) {
-      this.children.push(TreeNode(childNode));
+      this.children.push(new TreeNode(childNode));
     }
 
     // Read data from the node
@@ -86,21 +94,22 @@ export default function Editor() {
     const start = data.indexOf('(') + 1;
     const end = data.indexOf(')');
     const root = data.substring(start, end).trim();
-    const allData = data.substring(end + 1).trim();
+    const allData = data.substring(end).trim();
     const lines = allData.split('\n')
-    const storageTree = TreeNode(root)//Disregard the first line as that is just mindmap
+    const storageTree = new TreeNode(root)//Disregard the first line as that is just mindmap
+    var spaces = 0;
     for (let i = 1; i < lines.length; i++) {
-      storageTree.addChild(line[i])
+      spaces = countLeadingSpaces(lines[i])
+      storageTree.addChild(removeBegginingSpaces(lines[i]))//Remove beggining zeros
     }
-  }
-  
-  const recursiveAdd = (data, space) => {
-    
+    storageTree.printTree();
   }
 
   const handleExport = () => {
     const data = mermaidChart
-    downloadFile('map.nwk', data);
+    console.log("Tree data")
+    dataToTree(data)
+    //downloadFile('map.nwk', data);
   };
 
   const handleFileUpload = (event) => {
