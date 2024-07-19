@@ -6,7 +6,7 @@ const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 
 export default function Editor() {
   const [mermaidChart, setMermaidChart] = useState(`mindmap
-  root((Mindmap name))
+  root((NWK map))
     Carnivora
       Feline
         Cat
@@ -49,10 +49,40 @@ export default function Editor() {
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   };
+
+  function parseHierarchy(data) {
+    const lines = data.split('\n').map(line => line.replace(/\s+$/, '')); // Split lines and remove trailing spaces
+    const root = { name: 'root', children: [] };
+    const stack = [root];
+  
+    lines.forEach(line => {
+      const level = line.match(/^\s*/)[0].length;
+      const name = line.trim();
+      const node = { name, children: [] };
+  
+      while (stack.length > level + 1) {
+        stack.pop();
+      }
+      
+      stack[stack.length - 1].children.push(node);
+      stack.push(node);
+    });
+  
+    return root;
+  }
+  
+  function treeToNewick(node) {
+    if (!node.children.length) {
+      return node.name;
+    }
+  
+    const childrenNewick = node.children.map(child => treeToNewick(child)).join(',');
+    return `(${childrenNewick})${node.name}`;
+  }
   
   const handleExport = () => {
-    data = mermaidChart
-    downloadFile('mindmap.txt', data);
+    const data = treeToNewick(parseHierarchy(mermaidChart))
+    downloadFile('map.nwk', data);
   };
 
   const handleFileUpload = (event) => {
