@@ -71,7 +71,11 @@ export default function Editor() {
 
     // Add a child node
     addChild(childNode) {
-      this.children.push(new TreeNode(childNode));
+      if (childNode instanceof TreeNode) {
+        this.children.push(childNode);
+      } else {
+        throw new Error('Child must be an instance of TreeNode');
+      }
     }
 
     // Read data from the node
@@ -117,7 +121,13 @@ export default function Editor() {
       return this.items[this.items.length - 1];
     }
     // isEmpty()
-    // printStack()
+    printStack()
+    {
+      let str = "";
+      for (let i = 0; i < this.items.length; i++)
+        str += this.items[i] + " ";
+      return str;
+    }
   }
 
   const dataToTree = (data) => {
@@ -128,22 +138,26 @@ export default function Editor() {
     const lines = allData.split('\n')
     const storageTree = new TreeNode(root)//Disregard the first line as that is just mindmap
     var spaceStack = new Stack();
-    spaceStack.push(0)
     var nodeStack = new Stack();
     var spaces = 0;
+    spaceStack.push(0)
     nodeStack.push(storageTree)
     for (let i = 1; i < lines.length; i++) {
       spaces = countLeadingSpaces(lines[i])
       console.log(removeBegginingSpaces(lines[i]))
-      if(spaces == spaceStack.peek()){
-        nodeStack.pop()//Is sibling node, remove and attach to the parent
-        spaceStack.pop()
-      }
-      if(spaces > spaceStack.peek()){
-        nodeStack.peek().printTree()
-        nodeStack.peek().addChild(removeBegginingSpaces(lines[i]))//Remove beggining zeros
-        spaceStack.push(spaces)
-        nodeStack.push(removeBegginingSpaces(lines[i]))
+      while(true){
+        if(spaces == spaceStack.peek()){
+          console.log("Sibling")
+          console.log(nodeStack.pop().readData())//Is sibling node, remove and attach to the parent
+          spaceStack.pop()
+        }
+        if(spaces > spaceStack.peek()){
+          console.log("Parent")
+          nodeStack.peek().printTree()
+          nodeStack.peek().addChild(new TreeNode(removeBegginingSpaces(lines[i])))//Remove beggining zeros
+          spaceStack.push(spaces)
+          break;
+        }
       }
     }
     storageTree.printTree();
