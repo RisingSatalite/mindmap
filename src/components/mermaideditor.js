@@ -6,7 +6,7 @@ const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 
 export default function Editor() {
   const [mermaidChart, setMermaidChart] = useState(`mindmap
-  root((NWK map))
+  root(NWK map name)
     Carnivora
       Feline
         Cat
@@ -50,38 +50,40 @@ export default function Editor() {
     element.click();
   };
 
-  function parseHierarchy(data) {
-    const lines = data.split('\n').map(line => line.replace(/\s+$/, '')); // Split lines and remove trailing spaces
-    const root = { name: 'root', children: [] };
-    const stack = [root];
-  
-    lines.forEach(line => {
-      const level = line.match(/^\s*/)[0].length;
-      const name = line.trim();
-      const node = { name, children: [] };
-  
-      while (stack.length > level + 1) {
-        stack.pop();
-      }
-      
-      stack[stack.length - 1].children.push(node);
-      stack.push(node);
-    });
-  
-    return root;
+  function countLeadingSpaces(str) {
+    const match = str.match(/^ */);
+    return match ? match[0].length : 0;
   }
-  
-  function treeToNewick(node) {
-    if (!node.children.length) {
-      return node.name;
+
+  class TreeNode {
+    constructor(data) {
+      this.data = data;
+      this.children = [];
     }
-  
-    const childrenNewick = node.children.map(child => treeToNewick(child)).join(',');
-    return `(${childrenNewick})${node.name}`;
+
+    // Add a child node
+    addChild(childNode) {
+      if (childNode instanceof TreeNode) {
+        this.children.push(childNode);
+      } else {
+        throw new Error('Child must be an instance of TreeNode');
+      }
+    }
+
+    // Read data from the node
+    readData() {
+      return this.data;
+    }
+
+    // Print the tree (for debugging)
+    printTree(indent = '') {
+      console.log(`${indent}${this.data}`);
+      this.children.forEach(child => child.printTree(indent + '  '));
+    }
   }
   
   const handleExport = () => {
-    const data = treeToNewick(parseHierarchy(mermaidChart))
+    const data = mermaidChart
     downloadFile('map.nwk', data);
   };
 
