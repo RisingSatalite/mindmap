@@ -57,7 +57,7 @@ export default function Editor() {
 
   function removeBegginingSpaces(string) {
     var text = string
-    while(true){
+    while(true){//Check and remove spaces here
       break
     }
     return text
@@ -90,6 +90,36 @@ export default function Editor() {
     }
   }
 
+  // Stack class
+  class Stack {
+
+    // Array is used to implement stack
+    constructor()
+    {
+        this.items = [];
+    }
+
+    push(element)
+    {
+      // push element into the items
+      this.items.push(element);
+    }
+    
+    pop()
+    {
+      if (this.items.length == 0)
+          return 'Underflow'
+      return this.items.pop();
+    }
+    
+    peek()
+    {
+      return this.items[this.items.length - 1];
+    }
+    // isEmpty()
+    // printStack()
+  }
+
   const dataToTree = (data) => {
     const start = data.indexOf('(') + 1;
     const end = data.indexOf(')');
@@ -97,17 +127,31 @@ export default function Editor() {
     const allData = data.substring(end).trim();
     const lines = allData.split('\n')
     const storageTree = new TreeNode(root)//Disregard the first line as that is just mindmap
+    var spaceStack = new Stack();
+    spaceStack.push(0)
+    var nodeStack = new Stack();
     var spaces = 0;
+    nodeStack.push(storageTree)
     for (let i = 1; i < lines.length; i++) {
       spaces = countLeadingSpaces(lines[i])
-      storageTree.addChild(removeBegginingSpaces(lines[i]))//Remove beggining zeros
+      console.log(removeBegginingSpaces(lines[i]))
+      if(spaces == spaceStack.peek()){
+        nodeStack.pop()//Is sibling node, remove and attach to the parent
+        spaceStack.pop()
+      }
+      if(spaces > spaceStack.peek()){
+        nodeStack.peek().printTree()
+        nodeStack.peek().addChild(removeBegginingSpaces(lines[i]))//Remove beggining zeros
+        spaceStack.push(spaces)
+        nodeStack.push(removeBegginingSpaces(lines[i]))
+      }
     }
     storageTree.printTree();
   }
 
   const handleExport = () => {
     const data = mermaidChart
-    console.log("Tree data")
+    //console.log("Tree data")
     dataToTree(data)
     //downloadFile('map.nwk', data);
   };
