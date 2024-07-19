@@ -56,11 +56,7 @@ export default function Editor() {
   }
 
   function removeBegginingSpaces(string) {
-    var text = string
-    while(true){//Check and remove spaces here
-      break
-    }
-    return text
+    return string.trimStart();
   }
 
   class TreeNode {
@@ -84,12 +80,12 @@ export default function Editor() {
     }
 
     returnChildren(){
-      return this.children
+      return removeBegginingSpaces(this.children)
     }
 
     // Print the tree (for debugging)
     printTree(indent = '') {
-      console.log(`${indent}${this.data}`);
+      console.log(`${indent}${removeBegginingSpaces(this.data)}`);
       this.children.forEach(child => child.printTree(indent + '  '));
     }
   }
@@ -146,27 +142,31 @@ export default function Editor() {
       spaces = countLeadingSpaces(lines[i])
       console.log(removeBegginingSpaces(lines[i]))
       while(true){
-        if(spaces == spaceStack.peek()){
+        if(spaces <= spaceStack.peek()){
           console.log("Sibling")
           console.log(nodeStack.pop().readData())//Is sibling node, remove and attach to the parent
           spaceStack.pop()
         }
         if(spaces > spaceStack.peek()){
           console.log("Parent")
-          nodeStack.peek().printTree()
-          nodeStack.peek().addChild(new TreeNode(removeBegginingSpaces(lines[i])))//Remove beggining zeros
+          //nodeStack.peek().printTree()
+          const newNode = new TreeNode(removeBegginingSpaces(lines[i]))
+          nodeStack.peek().addChild(newNode)//Remove beggining zeros
+          nodeStack.push(newNode)
           spaceStack.push(spaces)
           break;
         }
       }
     }
-    storageTree.printTree();
+    //storageTree.printTree();
+    return storageTree;
   }
 
   const handleExport = () => {
     const data = mermaidChart
     //console.log("Tree data")
-    dataToTree(data)
+    const tree = dataToTree(data)
+    tree.printTree()
     //downloadFile('map.nwk', data);
   };
 
