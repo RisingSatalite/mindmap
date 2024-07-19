@@ -6,21 +6,14 @@ const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 
 export default function Editor() {
   const [mermaidChart, setMermaidChart] = useState(`mindmap
-  root((mindmap name))
-    Example Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectivness<br/>and features
-      On Automatic creation
-      Uses
-        Creative techniques
-        Strategic planning
-        Argument mapping
-    Tools
-      Pen and paper
+  root((Mindmap name))
+    Carnivora
+      Feline
+        Cat
+        Tiger
+      Kanine
+        Wolves
+        Dogs
   `);
 
   const change = (e) => {
@@ -58,7 +51,8 @@ export default function Editor() {
   };
   
   const handleExport = () => {
-    downloadFile('mindmap.txt', mermaidChart);
+    data = mermaidChart
+    downloadFile('mindmap.txt', data);
   };
 
   const handleFileUpload = (event) => {
