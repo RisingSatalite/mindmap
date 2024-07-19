@@ -63,16 +63,16 @@ export default function Editor() {
 
     // Add a child node
     addChild(childNode) {
-      if (childNode instanceof TreeNode) {
-        this.children.push(childNode);
-      } else {
-        throw new Error('Child must be an instance of TreeNode');
-      }
+      this.children.push(TreeNode(childNode));
     }
 
     // Read data from the node
     readData() {
       return this.data;
+    }
+
+    returnChildren(){
+      return this.children
     }
 
     // Print the tree (for debugging)
@@ -81,7 +81,23 @@ export default function Editor() {
       this.children.forEach(child => child.printTree(indent + '  '));
     }
   }
+
+  const dataToTree = (data) => {
+    const start = data.indexOf('(') + 1;
+    const end = data.indexOf(')');
+    const root = data.substring(start, end).trim();
+    const allData = data.substring(end + 1).trim();
+    const lines = allData.split('\n')
+    const storageTree = TreeNode(root)//Disregard the first line as that is just mindmap
+    for (let i = 1; i < lines.length; i++) {
+      storageTree.addChild(line[i])
+    }
+  }
   
+  const recursiveAdd = (data, space) => {
+    
+  }
+
   const handleExport = () => {
     const data = mermaidChart
     downloadFile('map.nwk', data);
