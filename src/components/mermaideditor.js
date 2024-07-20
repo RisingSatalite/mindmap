@@ -216,6 +216,8 @@ export default function Editor() {
     let nodeStack = new Stack();
     nodeStack.push(currentNode)
     let token = '';
+
+    let resetDataFlag = false//To change the data later, if there is child node
   
     for (let i = 0; i < newick.length; i++) {
       let char = newick[i];
@@ -226,14 +228,25 @@ export default function Editor() {
         nodeStack.push(newNode)//Add to the stack
         currentNode = newNode;
       } else if (char === ',') {
-        if(token != "")
+        //if(token != "")
+        if(resetDataFlag){
+          currentNode.changeData(token)
+          token = '';
+        }else{
           currentNode.addChild(new TreeNode(token))
           token = '';
+        }
+        resetDataFlag = false
       } else if (char === ')') {
+        if(resetDataFlag){
+          currentNode.changeData(token)
+          token = '';
+        }
         currentNode.addChild(new TreeNode(token))
         token = '';
         nodeStack.pop()
         currentNode = nodeStack.peek()
+        resetDataFlag = true
       } else if (char === ';') {
         continue;//Done
       } else {
