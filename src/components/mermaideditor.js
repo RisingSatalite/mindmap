@@ -158,8 +158,8 @@ export default function Editor() {
           console.log("Parent")
           //nodeStack.peek().printTree()
           const newNode = new TreeNode(removeBegginingSpaces(lines[i]))
-          nodeStack.peek().addChild(newNode)//Remove beggining zeros
-          nodeStack.push(newNode)
+          nodeStack.peek().addChild(newNode)//Add to the tree
+          nodeStack.push(newNode)//Add to the stack
           spaceStack.push(spaces)
           break;
         }
@@ -174,12 +174,12 @@ export default function Editor() {
     if(tree.hasChildren()){
       text = text + "("
       var first = true
-      for(let childNode in tree.returnChildren()){
-        if(first){
-          first = false;
+      for(let childNode of tree.returnChildren()){
+        if(!first){
           text = text + ","
         }
         text = treeToNWK(childNode, text)
+        first = false;
       }
       text = text + ")"
     }
@@ -195,7 +195,7 @@ export default function Editor() {
     tree.printTree()
     const real = treeToNWK(tree)
     console.log(real)
-    //downloadFile('map.nwk', data);
+    downloadFile('map.nwk', real);
   };
 
   const handleFileUpload = (event) => {
