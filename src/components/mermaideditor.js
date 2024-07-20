@@ -55,8 +55,8 @@ export default function Editor() {
     return match ? match[0].length : 0;
   }
 
-  function removeBegginingSpaces(string) {
-    return string.trimStart();
+  function removeBegginingSpaces(str) {
+    return str.replace(/^\s+/, '');
   }
 
   class TreeNode {
@@ -80,12 +80,12 @@ export default function Editor() {
     }
 
     returnChildren(){
-      return removeBegginingSpaces(this.children)
+      return this.children
     }
 
     // Print the tree (for debugging)
     printTree(indent = '') {
-      console.log(`${indent}${removeBegginingSpaces(this.data)}`);
+      console.log(`${indent}${this.data}`);
       this.children.forEach(child => child.printTree(indent + '  '));
     }
 
@@ -170,17 +170,18 @@ export default function Editor() {
   }
 
   const treeToNWK = (tree, text) => {
+    console.log(tree.readData())
     if(tree.hasChildren()){
       text = text + "("
       var first = true
-      for(let i in tree.returnChildren()){
+      for(let childNode in tree.returnChildren()){
         if(first){
           first = false;
           text = text + ","
         }
-        text = treeToNWK(i, text)
+        text = treeToNWK(childNode, text)
       }
-      text = text + "("
+      text = text + ")"
     }
     text = text + tree.readData();
 
@@ -192,6 +193,8 @@ export default function Editor() {
     //console.log("Tree data")
     const tree = dataToTree(data)
     tree.printTree()
+    const real = treeToNWK(tree)
+    console.log(real)
     //downloadFile('map.nwk', data);
   };
 
