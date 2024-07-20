@@ -7,7 +7,7 @@ import Editor from '@/components/mermaideditor';
 export default function Home() {
   return (
     <main className=" items-center p-24">
-      <div>Mindmap maker</div>
+      <div>NWK Map</div>
       <Editor></Editor>
     </main>
   );
