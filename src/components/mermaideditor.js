@@ -79,6 +79,10 @@ export default function Editor() {
       return this.data;
     }
 
+    changeData(data) {
+      this.data = data
+    }
+
     returnChildren(){
       return this.children
     }
@@ -97,7 +101,6 @@ export default function Editor() {
     }
   }
 
-  // Stack class
   class Stack {
 
     // Array is used to implement stack
@@ -188,6 +191,49 @@ export default function Editor() {
     return text
   }
 
+  const NWKtoTree = () => {
+    let stack = new Stack();
+  let currentNode = null;
+  let token = '';
+
+  for (let i = 0; i < newick.length; i++) {
+    let char = newick[i];
+
+    if (char === '(') {
+      if (currentNode !== null) {
+        stack.push(currentNode);
+      }
+      currentNode = new TreeNode(null);
+    } else if (char === ',') {
+      if (token) {
+        currentNode.data = token;
+        token = '';
+      }
+      let siblingNode = new TreeNode(null);
+      stack.peek().addChild(currentNode);
+      currentNode = siblingNode;
+    } else if (char === ')') {
+      if (token) {
+        currentNode.data = token;
+        token = '';
+      }
+      let parentNode = stack.pop();
+      parentNode.addChild(currentNode);
+      currentNode = parentNode;
+    } else if (char === ';') {
+      continue;
+    } else {
+      token += char;
+    }
+  }
+
+  if (token) {
+    currentNode.data = token;
+  }
+
+  return currentNode;
+  }
+
   const handleExport = () => {
     const data = mermaidChart
     //console.log("Tree data")
@@ -206,6 +252,8 @@ export default function Editor() {
       const content = e.target.result;
       try {
         const importedData = content;
+        console.log(importedData)
+        NWKtoTree(importedData).printTree()
         // Update your mind map data with importedData
         setMermaidChart(importedData);
       } catch (error) {
