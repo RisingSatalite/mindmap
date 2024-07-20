@@ -212,9 +212,9 @@ export default function Editor() {
   }
 
   const NWKtoTree = (newick) => {
-    let currentNode = TreeNode("Intial");
-    let dataStack = new Stack();
+    let currentNode = new TreeNode("Intial");
     let nodeStack = new Stack();
+    nodeStack.push(currentNode)
     let token = '';
   
     for (let i = 0; i < newick.length; i++) {
@@ -222,13 +222,18 @@ export default function Editor() {
   
       if (char === '(') {
         const newNode = new TreeNode("unnamed")
-        nodeStack.peek().addChild(newNode)//Add to the tree
+        currentNode.addChild(newNode)//Add to the tree
         nodeStack.push(newNode)//Add to the stack
+        currentNode = newNode;
       } else if (char === ',') {
+        if(token != "")
+          currentNode.addChild(new TreeNode(token))
+          token = '';
+      } else if (char === ')') {
         currentNode.addChild(new TreeNode(token))
         token = '';
-      } else if (char === ')') {
-
+        nodeStack.pop()
+        currentNode = nodeStack.peek()
       } else if (char === ';') {
         continue;//Done
       } else {
@@ -253,6 +258,30 @@ export default function Editor() {
     downloadFile('map.nwk', real);
   };
 
+  const treeToMermaid = (dataTree) => {
+    var data = `mindmap`
+    const spaceCount = 2
+    const space = " ".repeat(spaceCount)
+    data = `${data}\n${space}${dataTree.readData()}`;
+
+    for(let childNode of dataTree.returnChildren()){
+      data = treeToMermaidRecursionLoop(childNode, data, spaceCount)
+    }
+    
+    return data;
+  }
+
+  const treeToMermaidRecursionLoop = (dataTree, data, spaceCount) => {
+    const space = " ".repeat(spaceCount+2)
+    data = `${data}\n${space}${dataTree.readData()}`;
+
+    for(let childNode of dataTree.returnChildren()){
+      data = treeToMermaidRecursionLoop(childNode, data, spaceCount+2)
+    }
+    
+    return data;
+  }
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -262,9 +291,9 @@ export default function Editor() {
       try {
         const importedData = content;
         console.log(importedData)
-        NWKtoTree(importedData).printTree()
+        const treeData = NWKtoTree(importedData)
         // Update your mind map data with importedData
-        setMermaidChart(importedData);
+        setMermaidChart(treeToMermaid(treeData));
       } catch (error) {
         console.error('Error parsing imported data:', error);
         alert('An error occur while reading the data');
@@ -280,7 +309,6 @@ export default function Editor() {
           <button onClick={handleExport}>Export Data</button>
           <input
             type="file"
-            accept=".txt"
             onChange={handleFileUpload}
             style={{ display: 'none' }}
             id="fileInput"
