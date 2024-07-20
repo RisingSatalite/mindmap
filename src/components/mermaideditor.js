@@ -88,6 +88,13 @@ export default function Editor() {
       console.log(`${indent}${removeBegginingSpaces(this.data)}`);
       this.children.forEach(child => child.printTree(indent + '  '));
     }
+
+    hasChildren(){
+      if(this.children == 0){
+        return false;
+      }
+      return true;
+    }
   }
 
   // Stack class
@@ -160,6 +167,24 @@ export default function Editor() {
     }
     //storageTree.printTree();
     return storageTree;
+  }
+
+  const treeToNWK = (tree, text) => {
+    if(tree.hasChildren()){
+      text = text + "("
+      var first = true
+      for(let i in tree.returnChildren()){
+        if(first){
+          first = false;
+          text = text + ","
+        }
+        text = treeToNWK(i, text)
+      }
+      text = text + "("
+    }
+    text = text + tree.readData();
+
+    return text
   }
 
   const handleExport = () => {
