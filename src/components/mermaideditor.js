@@ -7,13 +7,28 @@ const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 export default function Editor() {
   const [mermaidChart, setMermaidChart] = useState(`mindmap
   root(NWK map name)
-    Carnivora
-      Feline
-        Cat
-        Tiger
-      Kanine
-        Wolves
-        Dogs
+    Mammals
+      Bats
+      Rodents
+        Mice
+      Carnivora
+        Feline
+          Cat
+          Tiger
+        Kanine
+          Wolves
+          Dogs
+    Retiles
+      Birds
+      Lizards
+        Snake
+    Insect
+      Ants
+        Bees
+        Wasp
+      Termites
+      Butterflies
+
   `);
 
   const change = (e) => {
