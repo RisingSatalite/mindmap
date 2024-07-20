@@ -228,7 +228,6 @@ export default function Editor() {
         nodeStack.push(newNode)//Add to the stack
         currentNode = newNode;
       } else if (char === ',') {
-        //if(token != "")
         if(resetDataFlag){
           currentNode.changeData(token)
           token = '';
@@ -241,9 +240,10 @@ export default function Editor() {
         if(resetDataFlag){
           currentNode.changeData(token)
           token = '';
+        }else{
+          currentNode.addChild(new TreeNode(token))
+          token = '';
         }
-        currentNode.addChild(new TreeNode(token))
-        token = '';
         nodeStack.pop()
         currentNode = nodeStack.peek()
         resetDataFlag = true
