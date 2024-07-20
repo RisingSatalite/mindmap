@@ -212,43 +212,32 @@ export default function Editor() {
   }
 
   const NWKtoTree = (newick) => {
-    let stack = new Stack();
-    let currentNode = null;
+    let currentNode = TreeNode("Intial");
+    let dataStack = new Stack();
+    let nodeStack = new Stack();
     let token = '';
-
+  
     for (let i = 0; i < newick.length; i++) {
       let char = newick[i];
-
+  
       if (char === '(') {
-        if (currentNode !== null) {
-          stack.push(currentNode);
-        }
-        currentNode = new TreeNode(null);
+        const newNode = new TreeNode("unnamed")
+        nodeStack.peek().addChild(newNode)//Add to the tree
+        nodeStack.push(newNode)//Add to the stack
       } else if (char === ',') {
-        if (token) {
-          currentNode.data = token;
-          token = '';
-        }
-        let siblingNode = new TreeNode(null);
-        stack.peek().addChild(currentNode);
-        currentNode = siblingNode;
+        currentNode.addChild(new TreeNode(token))
+        token = '';
       } else if (char === ')') {
-        if (token) {
-          currentNode.data = token;
-          token = '';
-        }
-        let parentNode = stack.pop();
-        parentNode.addChild(currentNode);
-        currentNode = parentNode;
+
       } else if (char === ';') {
-        continue;
+        continue;//Done
       } else {
         token += char;
       }
     }
-
-    if (token) {
-      currentNode.data = token;
+  
+    if (token) {//If still some data, add to node
+      currentNode.changeData(token);
     }
 
     return currentNode;
