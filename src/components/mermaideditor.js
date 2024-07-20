@@ -24,7 +24,9 @@ export default function Editor() {
         Snake
     Insect
       Ants
+        Fire Ants
         Bees
+          Honey Bee
         Wasp
       Termites
       Butterflies
@@ -276,16 +278,6 @@ export default function Editor() {
     return currentNode;
   }
 
-  const handleExport = () => {
-    const data = mermaidChart
-    //console.log("Tree data")
-    const tree = dataToTree(data)
-    tree.printTree()
-    const real = treeToNWK(tree)
-    console.log(real)
-    downloadFile('map.nwk', real);
-  };
-
   const treeToMermaid = (dataTree) => {
     var data = `mindmap`
     const spaceCount = 2
@@ -309,6 +301,16 @@ export default function Editor() {
     
     return data;
   }
+  
+  const handleExport = () => {
+    const data = mermaidChart
+    //console.log("Tree data")
+    const tree = dataToTree(data)
+    tree.printTree()
+    const real = treeToNWK(tree)
+    console.log(real)
+    downloadFile('map.nwk', real);
+  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
