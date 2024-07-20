@@ -172,7 +172,8 @@ export default function Editor() {
     return storageTree;
   }
 
-  const treeToNWK = (tree, text) => {
+  const treeToNWK = (tree) => {
+    var text = ""
     console.log(tree.readData())
     if(tree.hasChildren()){
       text = text + "("
@@ -181,7 +182,26 @@ export default function Editor() {
         if(!first){
           text = text + ","
         }
-        text = treeToNWK(childNode, text)
+        text = treeToNWKrecursion(childNode, text)
+        first = false;
+      }
+      text = text + ")"
+    }
+    text = text + tree.readData() + ";";
+
+    return text
+  }
+
+  const treeToNWKrecursion = (tree, text) => {
+    console.log(tree.readData())
+    if(tree.hasChildren()){
+      text = text + "("
+      var first = true
+      for(let childNode of tree.returnChildren()){
+        if(!first){
+          text = text + ","
+        }
+        text = treeToNWKrecursion(childNode, text)
         first = false;
       }
       text = text + ")"
@@ -191,47 +211,47 @@ export default function Editor() {
     return text
   }
 
-  const NWKtoTree = () => {
+  const NWKtoTree = (newick) => {
     let stack = new Stack();
-  let currentNode = null;
-  let token = '';
+    let currentNode = null;
+    let token = '';
 
-  for (let i = 0; i < newick.length; i++) {
-    let char = newick[i];
+    for (let i = 0; i < newick.length; i++) {
+      let char = newick[i];
 
-    if (char === '(') {
-      if (currentNode !== null) {
-        stack.push(currentNode);
+      if (char === '(') {
+        if (currentNode !== null) {
+          stack.push(currentNode);
+        }
+        currentNode = new TreeNode(null);
+      } else if (char === ',') {
+        if (token) {
+          currentNode.data = token;
+          token = '';
+        }
+        let siblingNode = new TreeNode(null);
+        stack.peek().addChild(currentNode);
+        currentNode = siblingNode;
+      } else if (char === ')') {
+        if (token) {
+          currentNode.data = token;
+          token = '';
+        }
+        let parentNode = stack.pop();
+        parentNode.addChild(currentNode);
+        currentNode = parentNode;
+      } else if (char === ';') {
+        continue;
+      } else {
+        token += char;
       }
-      currentNode = new TreeNode(null);
-    } else if (char === ',') {
-      if (token) {
-        currentNode.data = token;
-        token = '';
-      }
-      let siblingNode = new TreeNode(null);
-      stack.peek().addChild(currentNode);
-      currentNode = siblingNode;
-    } else if (char === ')') {
-      if (token) {
-        currentNode.data = token;
-        token = '';
-      }
-      let parentNode = stack.pop();
-      parentNode.addChild(currentNode);
-      currentNode = parentNode;
-    } else if (char === ';') {
-      continue;
-    } else {
-      token += char;
     }
-  }
 
-  if (token) {
-    currentNode.data = token;
-  }
+    if (token) {
+      currentNode.data = token;
+    }
 
-  return currentNode;
+    return currentNode;
   }
 
   const handleExport = () => {
