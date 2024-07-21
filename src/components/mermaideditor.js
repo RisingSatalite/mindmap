@@ -29,9 +29,7 @@ export default function Editor() {
           Honey Bee
         Wasp
       Termites
-      Butterflies
-
-  `);
+      Butterflies`);
 
   const change = (e) => {
     setMermaidChart(e.target.value);
@@ -151,6 +149,10 @@ export default function Editor() {
         str += this.items[i] + " ";
       return str;
     }
+
+    bottom(){//Return first item
+      return this.items[1];
+    }
   }
 
   const dataToTree = (data) => {
@@ -229,54 +231,57 @@ export default function Editor() {
   }
 
   const NWKtoTree = (newick) => {
-    let currentNode = new TreeNode("Intial");
+    let currentNode = new TreeNode("Initial");
+    const originNode = currentNode
     let nodeStack = new Stack();
-    nodeStack.push(currentNode)
+    nodeStack.push(currentNode);
     let token = '';
-
-    let resetDataFlag = false//To change the data later, if there is child node
+  
+    let resetDataFlag = false; // To change the data later, if there is a child node
   
     for (let i = 0; i < newick.length; i++) {
       let char = newick[i];
   
       if (char === '(') {
-        const newNode = new TreeNode("unnamed")
-        currentNode.addChild(newNode)//Add to the tree
-        nodeStack.push(newNode)//Add to the stack
+        const newNode = new TreeNode("unnamed");
+        currentNode.addChild(newNode); // Add to the tree
+        nodeStack.push(newNode); // Add to the stack
         currentNode = newNode;
       } else if (char === ',') {
-        if(resetDataFlag){
-          currentNode.changeData(token)
+        if (resetDataFlag) {
+          currentNode.changeData(token);
           token = '';
-        }else{
-          currentNode.addChild(new TreeNode(token))
+        } else {
+          currentNode.addChild(new TreeNode(token));
           token = '';
         }
-        resetDataFlag = false
+        resetDataFlag = false;
+        currentNode = nodeStack.peek();
       } else if (char === ')') {
-        if(resetDataFlag){
-          currentNode.changeData(token)
+        if (resetDataFlag) {
+          currentNode.changeData(token);
           token = '';
-        }else{
-          currentNode.addChild(new TreeNode(token))
+        } else {
+          currentNode.addChild(new TreeNode(token));
           token = '';
         }
-        nodeStack.pop()
-        currentNode = nodeStack.peek()
-        resetDataFlag = true
+        nodeStack.pop();
+        currentNode = nodeStack.peek();
+        resetDataFlag = true;
       } else if (char === ';') {
-        continue;//Done
+        continue; // Done
       } else {
         token += char;
       }
     }
   
-    if (token) {//If still some data, add to node
+    if (token) { // If still some data, add to node
       currentNode.changeData(token);
     }
-
-    return currentNode;
-  }
+  
+    return originNode;
+  };
+  
 
   const treeToMermaid = (dataTree) => {
     var data = `mindmap`
@@ -301,7 +306,7 @@ export default function Editor() {
     
     return data;
   }
-  
+
   const handleExport = () => {
     const data = mermaidChart
     //console.log("Tree data")
@@ -322,6 +327,7 @@ export default function Editor() {
         const importedData = content;
         console.log(importedData)
         const treeData = NWKtoTree(importedData)
+        treeData.printTree()
         // Update your mind map data with importedData
         setMermaidChart(treeToMermaid(treeData));
       } catch (error) {
