@@ -232,7 +232,7 @@ export default function Editor() {
 
   const NWKtoTree = (newick) => {
     let currentNode = new TreeNode("Initial");
-    const originNode = currentNode
+    const originNode = currentNode;
     let nodeStack = new Stack();
     nodeStack.push(currentNode);
     let token = '';
@@ -247,22 +247,22 @@ export default function Editor() {
         currentNode.addChild(newNode); // Add to the tree
         nodeStack.push(newNode); // Add to the stack
         currentNode = newNode;
+        token = ''; // Reset token when starting a new group
       } else if (char === ',') {
-        if (resetDataFlag) {
+        if (token) {
           currentNode.changeData(token);
-          token = '';
-        } else {
-          currentNode.addChild(new TreeNode(token));
           token = '';
         }
-        resetDataFlag = false;
+        nodeStack.pop();
         currentNode = nodeStack.peek();
+        const newNode = new TreeNode("unnamed");
+        currentNode.addChild(newNode);
+        nodeStack.push(newNode);
+        currentNode = newNode;
+        resetDataFlag = false;
       } else if (char === ')') {
-        if (resetDataFlag) {
+        if (token) {
           currentNode.changeData(token);
-          token = '';
-        } else {
-          currentNode.addChild(new TreeNode(token));
           token = '';
         }
         nodeStack.pop();
@@ -279,6 +279,8 @@ export default function Editor() {
       currentNode.changeData(token);
     }
   
+    console.log("Tree data");
+    originNode.printTree();
     return originNode;
   };
   
