@@ -1,6 +1,9 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+/* in ES 6 */
+import domtoimage from 'dom-to-image';
+import { saveAs } from 'file-saver';
 
 const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 
@@ -78,7 +81,15 @@ export default function Editor() {
     };
   
     reader.readAsText(file);
-  };  
+  };
+
+  const exportImage = () => {
+    domtoimage.toBlob(document.getElementById("mermaid-diagram"))
+    .then(function (blob) {
+        var FileSaver = require('file-saver');
+        FileSaver.saveAs(blob, 'mindmap.png');
+    });
+  }
   
   return (
     <main>
@@ -92,6 +103,7 @@ export default function Editor() {
             id="fileInput"
           />
           <button onClick={() => document.getElementById('fileInput').click()}>Import Data</button>
+          <button onClick={exportImage}>Export as Image</button>
         </div>
         <div class="full flex justify-center">
             <span class="half flex-1">
