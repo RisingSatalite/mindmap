@@ -90,6 +90,21 @@ export default function Editor() {
         FileSaver.saveAs(blob, 'mindmap.png');
     });
   }
+
+  const exportSVG = () => {
+    const node = document.getElementById("mermaid-diagram");
+
+    domtoimage.toSvg(node)
+    .then((dataUrl) => {
+      // Remove the `data:image/svg+xml;charset=utf-8,` prefix
+      const svgContent = dataUrl.replace(/^data:image\/svg\+xml;charset=utf-8,/, '');
+      const svgBlob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+      saveAs(svgBlob, 'mindmap.svg');
+    })
+    .catch((error) => {
+      console.error('Error converting HTML to SVG:', error);
+    });
+  }
   
   return (
     <main>
@@ -104,6 +119,7 @@ export default function Editor() {
           />
           <button onClick={() => document.getElementById('fileInput').click()}>Import Data</button>
           <button onClick={exportImage}>Export as Image</button>
+          <button onClick={exportSVG}>Export as SVG</button>
         </div>
         <div class="full flex justify-center">
             <span class="half flex-1">
