@@ -4,6 +4,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
+To build NW use
+npm run build-nw
+
 ```bash
 npm run dev
 # or

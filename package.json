@@ -10,7 +10,7 @@
     "build": "next build",
     "start-next": "next start",
     "lint": "next lint",
-    "build-nw": "nwbuild ./package.json",
+    "build-nw": "next build && nwbuild --platform win32",
     "start": "nw ."
   },
   "dependencies": {
