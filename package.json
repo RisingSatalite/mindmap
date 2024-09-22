@@ -1,18 +1,25 @@
 {
-  "name": "nwko",
+  "name": "mindmap",
   "version": "0.1.0",
   "private": true,
+
+  "main": ".next/index.html",
+  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start-next": "next start",
+    "lint": "next lint",
+    "build-nw": "nwbuild ./package.json",
+    "start": "nw ."
   },
   "dependencies": {
     "dom-to-image": "^2.6.0",
     "file-saver": "^2.0.5",
     "mermaid": "^10.9.1",
-    "next": "14.2.4",
+    "next": "^14.2.13",
+    "nw": "^0.91.0",
+    "nw-builder": "^4.11.0",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -21,5 +28,15 @@
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.1"
+  },
+  "window": {
+    "title": "MindMap",
+    "width": 800,
+    "height": 600,
+    "nodeIntegration": true,
+    "webPreferences": {
+      "nodeIntegration": true,
+      "contextIsolation": false
+    }
   }
 }
