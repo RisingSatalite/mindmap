@@ -8,6 +8,7 @@ import { saveAs } from 'file-saver';
 const Mermaid = dynamic(() => import('@/components/mermaid'), { ssr: false });
 
 export default function Editor() {
+  const [name, setName] = useState('Mindmap')
   const [mermaidChart, setMermaidChart] = useState(`mindmap
   root((mindmap name))
     Example Origins
@@ -61,7 +62,7 @@ export default function Editor() {
   };
   
   const handleExport = () => {
-    downloadFile('mindmap.txt', mermaidChart);
+    downloadFile(name+'.txt', mermaidChart);
   };
 
   const handleFileUpload = (event) => {
@@ -87,7 +88,7 @@ export default function Editor() {
     domtoimage.toBlob(document.getElementById("mermaid-diagram"))
     .then(function (blob) {
         var FileSaver = require('file-saver');
-        FileSaver.saveAs(blob, 'mindmap.png');
+        FileSaver.saveAs(blob, name+'.png');
     });
   }
 
@@ -99,7 +100,7 @@ export default function Editor() {
       // Remove the `data:image/svg+xml;charset=utf-8,` prefix
       const svgContent = dataUrl.replace(/^data:image\/svg\+xml;charset=utf-8,/, '');
       const svgBlob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-      saveAs(svgBlob, 'mindmap.svg');
+      saveAs(svgBlob, name+'.svg');
     })
     .catch((error) => {
       console.error('Error converting HTML to SVG:', error);
@@ -109,6 +110,12 @@ export default function Editor() {
   return (
     <main>
         <div>
+          <input
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            placeholder="Name your drawing name"
+          />
           <button onClick={handleExport}>Export Data</button>
           <input
             type="file"
