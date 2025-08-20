@@ -11,7 +11,7 @@
   "dependencies": {
     "dom-to-image": "^2.6.0",
     "file-saver": "^2.0.5",
-    "mermaid": "^11.4.1",
+    "mermaid": "^11.10.0",
     "next": "14.2.30",
     "react": "^18",
     "react-dom": "^18"
